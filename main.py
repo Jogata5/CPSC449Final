@@ -45,8 +45,10 @@ async def get_book_by_id(book_id: str):
 # API endpoint: adds a new book to the store
 async def add_book(title: str = Form(...), author: str  = Form(...), description: str  = Form(...), price: float  = Form(...), stock:int  = Form(...), num_of_sales: int = Form(...)):
     book_data = {"title": title, "author": author, "description": description, "price": price, "stock": stock, "num_of_sales":num_of_sales }
-    book.insert_one(book_data)
-    result = book.find_one(book_data)
+    final_book_data = BookModel(**book_data)
+    # valdates the incoming data
+    book.insert_one(final_book_data)
+    result = book.find_one(final_book_data)
     result['_id'] = str(result['_id'])
     return result
 
