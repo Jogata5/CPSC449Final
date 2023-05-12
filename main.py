@@ -12,6 +12,14 @@ client = MongoClient('mongodb://localhost:27017')
 db = client['bookstoredb'] 
 book = db['book'] #this is our book collection inside the database
 
+# drop existing indexes
+book.drop_indexes()
+
+#Create indexes
+book.create_index('title', name='title_index')
+book.create_index('author', name='author_index')
+book.create_index('price', name='price_index')
+
 # Created a Pydantic model for the book collection
 class BookModel(BaseModel):
     title: str
@@ -23,7 +31,54 @@ class BookModel(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello, world!"}
+    # Find the total number of books
+    total_pipeline = [
+        {
+            '$group': {
+                '_id': None, 
+                'count': {'$sum': 1}, #shows how many distinct books we have
+                'total': {'$sum': '$stock'} #gives the total book count
+            }
+        }
+    ]
+    total = list(book.aggregate(total_pipeline))
+
+    # Find the top 5 bestselling books
+    best_book_pipeline = [
+        {
+            '$group': {
+                '_id': {'title': '$title', 'author': '$author'},
+                'num_of_sales': {'$sum': '$num_of_sales'}
+            }
+        },
+        {
+            '$sort': {'num_of_sales':-1}
+        },
+        {   
+            '$limit': 5
+        }
+    ]
+    bestselling = list(book.aggregate(best_book_pipeline))
+
+    #Find the top 5 authors with the most books in the store
+    top_author_pipeline = [
+        {
+            '$group': {
+                '_id': '$author',
+                'sum_of_books': {'$sum': '$stock'}
+            }
+        }, 
+        {
+            '$sort': {'sum_of_books': -1}
+        },
+        {   
+            '$limit': 5
+        }
+    ]
+
+    top_authors = list(book.aggregate(top_author_pipeline))
+
+    return {"Book Count and Total" : total, "Best Selling" : bestselling, "Top Authors" : top_authors}
 
 @app.get("/books", response_model=List[BookModel])
 # API endpoint: retrieves a list of all books in the store
@@ -47,15 +102,15 @@ async def add_book(title: str = Form(...), author: str  = Form(...), description
     book_data = {"title": title, "author": author, "description": description, "price": price, "stock": stock, "num_of_sales":num_of_sales }
     final_book_data = BookModel(**book_data)
     # valdates the incoming data
-    book.insert_one(final_book_data)
-    result = book.find_one(final_book_data)
+    book.insert_one(dict(final_book_data))
+    result = book.find_one(dict(final_book_data))
     result['_id'] = str(result['_id'])
     return result
 
 @app.put("/books/{book_id}")
 # API endpoint: Updates an existing book by ID
-async def update_book(book_id, title: str = Form(...), author: str  = Form(...), description: str  = Form(...), price: float  = Form(...), stock:int  = Form(...)):
-    newvalues = { "$set": { "title": title, "author": author, "description": description, "price": price, "stock": stock} }
+async def update_book(book_id, title: str = Form(...), author: str  = Form(...), description: str  = Form(...), price: float  = Form(...), stock:int  = Form(...), num_of_sales: int = Form(...)):
+    newvalues = { "$set": { "title": title, "author": author, "description": description, "price": price, "stock": stock, "num_of_sales":num_of_sales} }
     book.update_one({'_id': ObjectId(book_id)}, newvalues)
     new_book = book.find_one({'_id': ObjectId(book_id)})
     new_book['_id'] = str(new_book['_id'])
