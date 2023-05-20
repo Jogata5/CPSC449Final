@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action="/books" method="post" autocomplete="off">
+        
+        <input type="text" name="title" placeholder="Title" class="textbox" id="title" required></br></br>
+        <input type="author" name="author" placeholder="Author" class="textbox" id="author" required></br></br>
+        <input type="description" name="description" placeholder="Book Description" class="textbox" id="description" required></br></br>
+        <input type="price" name="price" placeholder="Price" class="textbox" id="price" required></br></br>
+        <input type="stock" name="stock" placeholder="Stock" class="textbox" id="stock" required></br></br>
+        <input type="num_of_sales" name="num_of_sales" placeholder="Sales Number" class="textbox" id="num_of_sales" required></br></br>
+
+        <input type="submit" class="btn" value="Add Book">
+    </form>
+
+{% endblock %}

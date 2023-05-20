@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a class="nav-link">
+    <form action="/test" method="get" autocomplete="off">
+
+      <input type="book_id" name="book_id" placeholder="Book ID" class="textbox" id="book_id" required></br></br>
+  
+      <input type="submit" class="btn" value="Delete Book">
+    </form>
+</a>
+
+{% endblock %}

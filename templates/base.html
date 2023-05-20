@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>449 Project 1</title>
+    <link href="static/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+          <a class="navbar-brand" href="/"></a>
+            <div class="navbar-nav">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+              <a class="nav-link" href="test_page">Test</a>
+              <a class="nav-link" href="books">Books</a>
+              <a class="nav-link" href="top5">Top Catagories</a>
+              <a class="nav-link" href="add">Add Book</a>
+              <a class="nav-link" href="delete">Delete Book</a>
+              <a class="nav-link" href="update">Update Book</a>
+              <a class="nav-link">
+                <form action="/search" method="get" autocomplete="off">
+                  <input type="text" class="search" placeholder="Title/Author/Price" name="search">
+                  <button type="submit">Submit</button>
+                </form>
+              </a>
+            </div>
+        </div>
+      </nav>
+
+    <div class="style-line"> 
+    </div>
+
+
+    {% block content %}
+
+    {% endblock %}
+
+</body>
+</html>
+
