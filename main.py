@@ -108,6 +108,9 @@ async def addBookPage(request: Request):
 async def deleteBookPage(request: Request):
     return templates.TemplateResponse("delete.html", {"request" : request})
 
+@app.get("/update", response_class=HTMLResponse)
+async def updateBookPage(request: Request):
+    return templates.TemplateResponse("update.html", {"request" : request})
 
 
 @app.get("/books", response_model=List[BookModel])
@@ -125,14 +128,6 @@ async def get_book_by_id(book_id: str):
     else:
         result['_id'] = str(result['_id'])
         return result
-
-# @app.post("/books/search_id")
-# async def search_book_id(book_id):
-#     result = book.find_one({'_id': ObjectId(book_id)})
-#     if not result:
-#          return {"message": "Book not found"}
-#     else:
-#         return book.find_one({'_id': ObjectId(book_id)})
 
 @app.post("/books")
 # API endpoint: adds a new book to the store
@@ -156,7 +151,7 @@ async def update_book(book_id, title: str = Form(...), author: str  = Form(...),
 
 @app.delete("/books/{book_id}")
 # Deletes a book from the store by ID
-async def delete_book(book_id):
+async def delete_book(book_id : str):
     result = book.find_one({'_id': ObjectId(book_id)})
     if not result:
          return {"message": "Book not found"}
